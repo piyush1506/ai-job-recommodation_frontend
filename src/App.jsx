@@ -313,12 +313,15 @@ function MatchPage() {
       const formData = new FormData();
       formData.append('file', f);
       try {
-        const res = await axios.post(`${API}/upload`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const res = await axios.post(`${API}/upload`, formData);
         setData(res.data);
       } catch (err) {
-        setError(err.response?.data?.detail || 'Something went wrong.');
+        console.error("Upload error:", err);
+        if (!err.response) {
+          setError('Network error or CORS issue. Please check if the backend is running and allows requests from this origin.');
+        } else {
+          setError(err.response.data?.detail || 'Something went wrong during upload.');
+        }
         setFile(null);
       } finally {
         setLoading(false);
